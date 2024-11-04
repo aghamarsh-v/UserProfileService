@@ -1,0 +1,15 @@
+{
+  "name": "userprofile",
+  "version": "1.0.0",
+  "description": "User Profile management service for Book management system",
+  "main": "index.js",
+  "scripts": {
+    "test": "start-test",
+    "build-dev": "webpack --mode development",
+    "build-prod": "webpack",
+    "start-serve": "node ./server/server.js",
+    "dev-serve": "nodemon ./server/server.js"
+  },
+  "author": "Aghamarsh Varanasi",
+  "license": "MIT"
+}
