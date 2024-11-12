@@ -1,15 +1,28 @@
 const User = require("../model/User")
+const Utils = require("Utils")
 const bcrypt = require("bcryptjs")
 const jwt = require('jsonwebtoken');
-const jwtSecret = "e43e987fcaf4d7032da084803e2238c55b7cf56ead34b6b5f290cc2574c03487333614";
+const jwtSecret = "e43e987fcaf4d7032da084803e2238c55b7cf56ead34b6b5f290cc2574c03487asda333614";
+const publicKey = "";
 
 // user registration API
+
+// user registration is in the format. All fields are required
+// {
+//     userInfo: {
+//         name: 'full name',
+//         email: 'abcd@gmail.com',
+//         password: 'qwerty', //  64 bit encoded, password should be a min of 8 characters
+//         username: 'my_user_name
+//     }
+// }
+
 exports.register = async (req, res, next) => {
     const {userInfo} = req.body;
-    const loginInfo = atob(userInfo);
-    const strArr = loginInfo.split(':');
-    const username = strArr[0];
-    const password = strArr[1];
+    const fullName = userInfo.name;
+    const email = userInfo.email;
+    const username = userInfo.username;
+    const password = atob(userInfo.password);
 
     if (!password || password.length < 8) {
         return res.status(400).json({ message: "Password less than 8 characters" });
@@ -17,30 +30,22 @@ exports.register = async (req, res, next) => {
 
     try {
         const hash = await bcrypt.hash(password, 10);
-        await User.create({
-            username,
-            password: hash
-        }).then(user => {
-            const maxAge = 3 * 60 * 60;
-            const token = jwt.sign(
-                { id: user._id, username, role: user.role },
-                jwtSecret,
-                { expiresIn: maxAge}
-            );
+        delete password;
 
-            res.cookie("jwt", token, {
-                httpOnly: true,
-                maxAge: maxAge * 1000
-            });
-    
-            res.status(200).json({
-                status: true,
-                message: "User successfully created",
-                user: {
-                    username: user.username,
-                    selectedLanguage: user.selectedLanguage
-                }
-            });
+        const user = await User.create({
+            username,
+            password: hash,
+            name: fullName,
+            email
+        });
+
+        res.status(200).json({
+            status: true,
+            message: "User successfully created",
+            user: {
+                username: user.username,
+                email: user.email
+            }
         });
     } catch (err) {
         res.status(401).json({
@@ -52,12 +57,16 @@ exports.register = async (req, res, next) => {
 }
 
 // user login API
+
+// user login input format
+// {
+//     username: 'my_username',
+//     password: 'qwerty', //  64 bit encoded
+// }
+
 exports.login = async (req, res, next) => {
-    const {userInfo} = req.body;
-    const loginInfo = atob(userInfo);
-    const strArr = loginInfo.split(':');
-    const username = strArr[0];
-    const password = strArr[1];
+    const username = req.body.username;
+    const password = req.body.password;
 
     if (!username || !password) {
         return res.status(400).json({
@@ -78,25 +87,18 @@ exports.login = async (req, res, next) => {
         } else {
             const result = await bcrypt.compare(password, user.password);
             if (result) {
-                const maxAge = 3 * 60 * 60;
-                const token = jwt.sign(
-                    { id: user._id, username, role: user.role},
-                    jwtSecret,
-                    { expiresIn: maxAge }
-                );
+                const token = Utils.generateJWT(user);
+                const refreshExpiry = moment().utc().add(3, 'days').endOf('day').format('X')
+                const refreshtoken = Utils.generateJWT({ exp: parseInt(refreshExpiry), data: user.username })
 
-                res.cookie("jwt", token, {
-                    httpOnly: true,
-                    maxAge: maxAge * 1000
-                });
+                delete user.password;
 
                 res.status(200).json({
                     status: true,
                     message: "Login successful",
-                    user: {
-                        username: user.username,
-                        selectedLanguage: user.selectedLanguage
-                    }
+                    user,
+                    token,
+                    refresh: refreshtoken
                 });
             } else {
                 res.status(401).json({
