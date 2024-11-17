@@ -1,6 +1,7 @@
 const User = require("../model/User")
 const Utils = require("./Utils")
 const bcrypt = require("bcryptjs")
+const moment = require('moment');
 
 // user registration API
 
@@ -63,8 +64,8 @@ exports.register = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
     const username = req.body.username;
-    const password = req.body.password;
-
+    const password = atob(req.body.password);
+    
     if (!username || !password) {
         return res.status(400).json({
             status: false,
@@ -84,7 +85,7 @@ exports.login = async (req, res, next) => {
         } else {
             const result = await bcrypt.compare(password, user.password);
             if (result) {
-                const token = Utils.generateJWT(user);
+                const token = Utils.generateJWT({username: user.username});
                 const refreshExpiry = moment().utc().add(3, 'days').endOf('day').format('X')
                 const refreshtoken = Utils.generateJWT({ exp: parseInt(refreshExpiry), data: user.username })
 

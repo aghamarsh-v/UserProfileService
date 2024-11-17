@@ -1,9 +1,10 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const fs = require('fs')
+const path = require('path')
 
-const privateKEY = fs.readFileSync('./private.key', 'utf8')
-const publicKEY = fs.readFileSync('./public.key', 'utf8')
+const privateKEY = fs.readFileSync(path.join(__dirname, './private.key'), 'utf8')
+const publicKEY = fs.readFileSync(path.join(__dirname, './public.key'), 'utf8')
 
 const i = 'jwt-node'
 const s = 'jwt-node'
