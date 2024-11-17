@@ -1,9 +1,6 @@
 const User = require("../model/User")
-const Utils = require("Utils")
+const Utils = require("./Utils")
 const bcrypt = require("bcryptjs")
-const jwt = require('jsonwebtoken');
-const jwtSecret = "e43e987fcaf4d7032da084803e2238c55b7cf56ead34b6b5f290cc2574c03487asda333614";
-const publicKey = "";
 
 // user registration API
 
@@ -13,7 +10,7 @@ const publicKey = "";
 //         name: 'full name',
 //         email: 'abcd@gmail.com',
 //         password: 'qwerty', //  64 bit encoded, password should be a min of 8 characters
-//         username: 'my_user_name
+//         username: 'my_user_name'
 //     }
 // }
 
@@ -22,7 +19,7 @@ exports.register = async (req, res, next) => {
     const fullName = userInfo.name;
     const email = userInfo.email;
     const username = userInfo.username;
-    const password = atob(userInfo.password);
+    let password = atob(userInfo.password);
 
     if (!password || password.length < 8) {
         return res.status(400).json({ message: "Password less than 8 characters" });
@@ -30,7 +27,7 @@ exports.register = async (req, res, next) => {
 
     try {
         const hash = await bcrypt.hash(password, 10);
-        delete password;
+        password = null;
 
         const user = await User.create({
             username,
