@@ -85,16 +85,21 @@ exports.login = async (req, res, next) => {
         } else {
             const result = await bcrypt.compare(password, user.password);
             if (result) {
-                const token = Utils.generateJWT({username: user.username});
+                const logincount = user.logincount + 1;
+                const token = Utils.generateJWT({username: user.username, version: logincount});
                 const refreshExpiry = moment().utc().add(3, 'days').endOf('day').format('X')
                 const refreshtoken = Utils.generateJWT({ exp: parseInt(refreshExpiry), data: user.username })
 
                 delete user.password;
 
+                const filter = { username };
+                const update = { $inc: { logincount: 1}};
+                const userUpdated = await User.findOneAndUpdate(filter, update);
+
                 res.status(200).json({
                     status: true,
                     message: "Login successful",
-                    user,
+                    user: user.username,
                     token,
                     refresh: refreshtoken
                 });
@@ -103,6 +108,60 @@ exports.login = async (req, res, next) => {
                     status: false,
                     message: "Password entered is invalid",
                 });
+            }
+        }
+    } catch (error) {
+        res.status(400).json({
+            status: false,
+            message: "An unknown error occurred",
+            error: error.message
+        });
+    }
+}
+
+// user logout API
+exports.logout = async (req, res, next) => {
+    const username = req.body.username;
+    const sessionExpiryErr = {
+        status: false,
+        message: "Session has expired"
+    };
+    
+    if (!username) {
+        return res.status(400).json({
+            status: false,
+            message: "Username not sent"
+        })
+    }
+
+    try {
+        const sessionToken = req.header['authorization'];
+        if(!sessionToken) {
+            return res.status(403).send(sessionExpiryErr);
+        }
+
+        const user = await User.findOne({username});
+        // user not found
+        if (!user) {
+            res.status(401).json({
+                status: false,
+                message: "User not found"
+            });
+        } else {
+            const userInfo = Utils.verifyJWT(sessionToken);
+
+            if (userInfo.username === username && user.logincount === userInfo.version) {
+                // invalidate session token
+                const filter = {username};
+                const update = {$inc: {logincount: 1}}
+                const result = await User.findOneAndUpdate(filter, update);
+                res.status(200).json({
+                    status: true,
+                    message: "Logout successful",
+                    user
+                });
+            } else {
+                res.status(403).json(sessionExpiryErr);
             }
         }
     } catch (error) {

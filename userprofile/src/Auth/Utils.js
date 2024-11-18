@@ -14,7 +14,7 @@ const verifyOptions = {
     issuer: i,
     subject: s,
     audience: a,
-    expiresIn: '8784h',
+    expiresIn: '1h',
     algorithm: ['RS256'],
 }
 
@@ -27,7 +27,7 @@ const generateJWT = (payload) => {
         issuer: i,
         subject: s,
         audience: a,
-        expiresIn: '8784h',
+        expiresIn: '1h',
         algorithm: 'RS256',
     }
 

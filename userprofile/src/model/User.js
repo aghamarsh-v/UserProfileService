@@ -24,6 +24,11 @@ const UserSchema = new Mongoose.Schema({
     default: "Basic",
     required: true,
   },
+  tokenversion: {
+    type: Number,
+    default: 0,
+    required: true,
+  }
 });
 
 const User = Mongoose.model("user", UserSchema);
