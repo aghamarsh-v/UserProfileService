@@ -10,7 +10,7 @@ const moment = require('moment');
 //     userInfo: {
 //         name: 'full name',
 //         email: 'abcd@gmail.com',
-//         password: 'qwerty', //  64 bit encoded, password should be a min of 8 characters
+//         password: 'qwerty', // password should be a min of 8 characters
 //         username: 'my_user_name'
 //     }
 // }
@@ -20,7 +20,7 @@ exports.register = async (req, res, next) => {
     const fullName = userInfo.name;
     const email = userInfo.email;
     const username = userInfo.username;
-    let password = atob(userInfo.password);
+    let password = userInfo.password;
 
     if (!password || password.length < 8) {
         return res.status(400).json({ message: "Password less than 8 characters" });
@@ -59,12 +59,12 @@ exports.register = async (req, res, next) => {
 // user login input format
 // {
 //     username: 'my_username',
-//     password: 'qwerty', //  64 bit encoded
+//     password: 'qwerty'
 // }
 
 exports.login = async (req, res, next) => {
     const username = req.body.username;
-    const password = atob(req.body.password);
+    const password = req.body.password;
     
     if (!username || !password) {
         return res.status(400).json({
@@ -135,7 +135,7 @@ exports.logout = async (req, res, next) => {
     }
 
     try {
-        const sessionToken = req.header['authorization'];
+        const sessionToken = req.headers['authorization'];
         if(!sessionToken) {
             return res.status(403).send(sessionExpiryErr);
         }

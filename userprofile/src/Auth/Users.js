@@ -1,7 +1,6 @@
 const User = require("../model/User")
 const Utils = require("./Utils")
 const bcrypt = require("bcryptjs")
-const moment = require('moment');
 
 // user change password
 exports.changePassword = async (req, res, next) => {
@@ -22,7 +21,7 @@ exports.changePassword = async (req, res, next) => {
     }
 
     try {
-        const sessionToken = req.header['authorization'];
+        const sessionToken = req.headers['authorization'];
         if(!sessionToken) {
             return res.status(403).send(sessionExpiryErr);
         }

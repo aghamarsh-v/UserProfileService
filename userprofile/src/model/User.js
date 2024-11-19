@@ -24,7 +24,7 @@ const UserSchema = new Mongoose.Schema({
     default: "Basic",
     required: true,
   },
-  tokenversion: {
+  logincount: {
     type: Number,
     default: 0,
     required: true,
