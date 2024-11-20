@@ -7,7 +7,7 @@
     "test": "start-test",
     "build-dev": "webpack --mode development",
     "build-prod": "webpack",
-    "start-serve": "node ./src/server.js",
+    "start": "node ./src/server.js",
     "dev-serve": "nodemon ./src/server.js"
   },
   "author": "Aghamarsh Varanasi",
