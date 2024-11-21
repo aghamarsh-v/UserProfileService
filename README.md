@@ -1,4 +1,5 @@
 # BookManagementSystem
+# Author - Aghamarsh Varanasi
 User account management service for Book management system.
 
 REST APIs supported in the microservice:
@@ -14,7 +15,5 @@ REST APIs supported in the microservice:
 // Needs Admin authentication
 5. Add User                                 - http://localhost:5000/api/admin/addUser
 6. View User based on username or email     - http://localhost:5000/api/admin/getUser
-7. View User based on db id                 - http://localhost:5000/api/admin/getUser/:userId
-8. View all Users                           - http://localhost:5000/api/admin/getAllUsers
-9. Delete a user                            - http://localhost:5000/api/admin/deleteUser
-10. Delete a user based on db id            - /admin/deleteUser/:userId
+7. View all Users                           - http://localhost:5000/api/admin/getAllUsers
+8. Delete a user                            - http://localhost:5000/api/admin/deleteUser
