@@ -31,7 +31,6 @@ exports.addUser = async (req, res, next) => {
 
     try {
         const hash = await bcrypt.hash(password, 10);
-        password = null;
 
         const user = await User.create({
             username,
@@ -196,7 +195,11 @@ exports.deleteUser = async (req, res, next) => {
             });
         }
 
-        res.status(200).json(user);
+        res.status(200).json({
+            status: true,
+            message: "User deleted succesfully",
+            user: user.username
+        });
     } catch (error) {
         res.status(400).json({
             status: false,
@@ -219,10 +222,14 @@ exports.deleteUserWithId = async (req, res, next) => {
 
     try {
         const user = await User.findByIdAndDelete(id);
-        if (!user) {
+
+        if (!user || Object.keys(user).length === 0) {
             return res.status(404).json({ error: 'User not found' });
         }
-        res.status(200).json({ message: 'User deleted successfully' });
+        res.status(200).json({
+            status: true,
+            message: "User deleted succesfully"
+        });
     } catch (error) {
         res.status(400).json({
             status: false,

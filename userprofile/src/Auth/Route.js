@@ -15,9 +15,7 @@ router.route("/users/changePassword").post(changePassword);
 // admin APIs
 router.route("/admin/addUser").post(addUser);
 router.route("/admin/getUser").get(getUser);
-router.route("/admin/getUser/:userId").get(getUserWithId);
 router.route("/admin/getAllUsers").get(getAllUsers);
 router.route("/admin/deleteUser").delete(deleteUser);
-router.route("/admin/deleteUser/:userId").delete(deleteUserWithId);
 
 module.exports = router;

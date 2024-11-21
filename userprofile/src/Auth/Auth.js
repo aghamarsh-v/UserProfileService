@@ -158,7 +158,7 @@ exports.logout = async (req, res, next) => {
                 res.status(200).json({
                     status: true,
                     message: "Logout successful",
-                    user
+                    user: username
                 });
             } else {
                 res.status(403).json(sessionExpiryErr);
